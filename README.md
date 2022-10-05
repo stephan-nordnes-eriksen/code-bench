@@ -15,11 +15,11 @@ let options = {
 	// see Options below for available settings
 }
 let benchmark = new CB(options)
-benchmark.add("test name 1", async () => {
+benchmark.task("test name 1", async () => {
 	// First test case
 	let a = 2*2
 })
-benchmark.add("test name 2", async () => {
+benchmark.task("test name 2", async () => {
 	// Second test case
 	let a = 2<<1
 })
@@ -36,6 +36,26 @@ benchmark.run().then(result => {
 
 # Options
 
+```javascript
+const options = {
+	silent?: boolean
+		// default = false. Prints results to console
+	maxItrCount?: number
+		// default: 2 000 000. Target total number of calls to task function.
+	maxItrTimeSeconds?: number
+		// default: 5. Maximum amount of total time per task.
+	targetLoopTimeSeconds?: number
+		// default: 0.5. used together with dynamicIterationCount to achieve dynamic test runs.
+	dynamicIterationCount?: boolean
+		// default = true. Each test case will first be estimated, then it will attempt to run in increments of `targetLoopTimeSeconds` increments.
+	cleanup?: () => void
+		// Callback (async or sync) run after fully run task
+	startup?: () => void
+		// Callback (async or sync) run before all tasks
+	shutdown?: () => void
+		// Callback (async or sync) run after all tasks
+}
+```
 
 # Key concepts
 

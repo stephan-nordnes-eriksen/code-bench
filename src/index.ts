@@ -59,7 +59,7 @@ export class CodeBench {
 		maxItrCount = 2000000,
 		maxItrTimeSeconds = 5,
 		targetLoopTimeSeconds = 0.5,
-		dynamicIterationCount = false,
+		dynamicIterationCount = true,
 		cleanup,
 		startup,
 		shutdown,

@@ -22,6 +22,7 @@
 		"watch-ts": "tsc -w",
 		"patch-release": "standard-version && git push --follow-tags && npm publish"
 	},
+	"main": "dist/index.js",
 	"files": [
 		"dist/"
 	],

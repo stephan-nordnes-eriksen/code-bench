@@ -1,8 +1,3 @@
-// import { isWithStatement } from "typescript"
-// import { createContext, runInNewContext, Script } from "vm"
-// import { timingSafeEqual } from "crypto";
-
-
 type BenchmarkResult = {
 	task: Task
 	taskName: string

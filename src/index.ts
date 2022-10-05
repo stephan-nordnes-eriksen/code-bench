@@ -31,10 +31,11 @@ class Task {
 }
 
 // From MDN docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncFunction
-const AsyncFunction = Object.getPrototypeOf(async function(){/* Intentionally left blank */}).constructor;
+const AsyncFunction = Object.getPrototypeOf(async function () {/* Intentionally left blank */ }).constructor;
 
 /** Constructor Class for AsyncBenchmark */
 interface BenchmarkConfig {
+	silent?: boolean
 	maxItrCount?: number
 	maxItrTimeSeconds?: number
 	targetLoopTimeSeconds?: number
@@ -49,6 +50,7 @@ interface BenchmarkConfig {
 
 export class CodeBench {
 	tasks: Task[] = []
+	silent = false
 	maxItrTimeNS = 5e9
 	maxItrCount = 2000000
 	cleanup?: () => void
@@ -58,6 +60,7 @@ export class CodeBench {
 	dynamicIterationCount = false
 
 	constructor({
+		silent = false,
 		maxItrCount = 2000000,
 		maxItrTimeSeconds = 5,
 		targetLoopTimeSeconds = 0.5,
@@ -66,6 +69,7 @@ export class CodeBench {
 		startup,
 		shutdown,
 	}: BenchmarkConfig = {}) {
+		this.silent = silent
 		this.maxItrCount = maxItrCount
 		this.maxItrTimeNS = maxItrTimeSeconds * 1e9
 		this.cleanup = cleanup
@@ -184,7 +188,7 @@ export class CodeBench {
 		eval('')
 
 		// Empty try-catch will apparently disable optimizations
-		try {/* Intentionally left blank */} catch (e) {/* Intentionally left blank */}
+		try {/* Intentionally left blank */ } catch (e) {/* Intentionally left blank */ }
 
 		if (this.startup) {
 			await Promise.resolve(this.startup()).catch(error => {
@@ -225,7 +229,7 @@ export class CodeBench {
 					// Pre assign variables to prevent memory allocation latencies
 
 					const timings = await newFn.call(task.fn)
-					timings.forEach((timeObje: {start: [number, number], stop: [number, number]}) => {
+					timings.forEach((timeObje: { start: [number, number], stop: [number, number] }) => {
 						task.timings.push({
 							start: this.nsFromHrtime(timeObje.start),
 							stop: this.nsFromHrtime(timeObje.stop),
@@ -246,7 +250,9 @@ export class CodeBench {
 				global.gc()
 			}
 			const taskResult = this.calculatePerf(task, failure)
-			this.printResultPreview(taskResult)
+			if (!this.silent) {
+				this.printResultPreview(taskResult)
+			}
 			results.push(taskResult)
 			if (this.cleanup) {
 				await Promise.resolve(this.cleanup()).catch(error => {
@@ -256,19 +262,21 @@ export class CodeBench {
 			}
 		}
 		const resultsCopy = [...results]
-		resultsCopy.sort((a,b) => {
-			if (a.opsPerSecond < b.opsPerSecond){
+		resultsCopy.sort((a, b) => {
+			if (a.opsPerSecond < b.opsPerSecond) {
 				return 1
 			}
-			if (a.opsPerSecond > b.opsPerSecond){
+			if (a.opsPerSecond > b.opsPerSecond) {
 				return -1
 			}
 			return 0
 		})
-		resultsCopy.forEach((res,index) => {
+		resultsCopy.forEach((res, index) => {
 			res.rank = index + 1
 		})
-		console.table(results, ["taskName", "opsPerSecond", "rank", "totalCalls", "totalTime", "stdDev", "meanTime", "minTime", "maxTime", "dropped"])
+		if (!this.silent) {
+			console.table(results, ["taskName", "opsPerSecond", "rank", "totalCalls", "totalTime", "stdDev", "meanTime", "minTime", "maxTime", "dropped"])
+		}
 		if (this.shutdown) {
 			await Promise.resolve(this.shutdown()).catch(error => {
 				console.error("Error with shutdown function")
@@ -313,7 +321,7 @@ export class CodeBench {
 	 * @param internalLoop Number of times the internal loop will run the provided function
 	 * @returns
 	 */
-	private generateRunnerMethodString(functionUniqueness: string|number, internalLoop: number) {
+	private generateRunnerMethodString(functionUniqueness: string | number, internalLoop: number) {
 		// Pre assign variables startTime/stopTIme to prevent memory allocation latencies
 		return `eval(''); try {} catch(e) {}; f${functionUniqueness} = this;\
 			const result = [];\

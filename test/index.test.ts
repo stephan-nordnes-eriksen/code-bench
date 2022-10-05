@@ -3,6 +3,7 @@ import { CodeBench } from "../src/index";
 describe('CodeBench', () => {
 	test('maxItrCount', async () => {
 		const cb = new CodeBench({
+			silent: true,
 			maxItrCount: 1,
 		})
 		let itrCount = 0
@@ -14,6 +15,7 @@ describe('CodeBench', () => {
 	})
 	test('maxItrCount', async () => {
 		const cb = new CodeBench({
+			silent: true,
 			maxItrCount: 10,
 		})
 		let itrCount = 0
@@ -27,6 +29,7 @@ describe('CodeBench', () => {
 	test('shutdown', async () => {
 		let executionCount = 0
 		const cb = new CodeBench({
+			silent: true,
 			maxItrCount: 1,
 			startup: async () => {
 				executionCount = executionCount + 1
@@ -51,6 +54,7 @@ describe('CodeBench', () => {
 	test('cleanup', async () => {
 		let executionCount = 0
 		const cb = new CodeBench({
+			silent: true,
 			maxItrCount: 1,
 			cleanup: async () => {
 				executionCount = executionCount + 1
@@ -69,6 +73,7 @@ describe('CodeBench', () => {
 	test('cleanup between', async () => {
 		let executionCount = 0
 		const cb = new CodeBench({
+			silent: true,
 			maxItrCount: 1,
 			cleanup: async () => {
 				executionCount = executionCount + 1
@@ -93,6 +98,7 @@ describe('CodeBench', () => {
 	test('shutdown', async () => {
 		let executionCount = 0
 		const cb = new CodeBench({
+			silent: true,
 			maxItrCount: 1,
 			shutdown: async () => {
 				executionCount = executionCount + 1

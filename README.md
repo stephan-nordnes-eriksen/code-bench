@@ -1,4 +1,4 @@
-# code-bench
+**# code-bench
 
 code-bench aims at being a [stable](#key-concepts) JavaScript profiling tool, providing reliable benchmarking numbers.
 
@@ -9,12 +9,12 @@ code-bench aims at being a [stable](#key-concepts) JavaScript profiling tool, pr
 # Usage
 
 ```javascript
-import CB from 'code-bench'
+import { CodeBench } from "../src/index"
 
-let options = {
+const options = {
 	// see Options below for available settings
 }
-let benchmark = new CB(options)
+const benchmark = new CodeBench(options)
 benchmark.task("test name 1", async () => {
 	// First test case
 	let a = 2*2
@@ -28,10 +28,24 @@ benchmark.run().then(result => {
 	// run will print a table to console,
 	// but you also receive all the results here
 	result.forEach(res => {
-		console.log(res.name, res.rank)
+		console.log(res.taskName, res.rank)
 	})
 })
+```
 
+## Example output
+
+```shell
+test name 1 14623312.39818303 ops/sec ± 1.205e+1% min/max/mean: 1.171e-1s/1.361e-1s/6.827e-8s ( 74070612 runs sampled )
+test name 2 14585570.013743076 ops/sec ± 1.202e+1% min/max/mean: 1.162e-1s/1.289e-1s/6.845e-8s ( 73744860 runs sampled )
+┌─────────┬───────────────┬────────────────────┬──────┬────────────┬───────────┬─────────────┬─────────────┬─────────────┬─────────────┬─────────┐
+│ (index) │   taskName    │    opsPerSecond    │ rank │ totalCalls │ totalTime │   stdDev    │  meanTime   │   minTime   │   maxTime   │ dropped │
+├─────────┼───────────────┼────────────────────┼──────┼────────────┼───────────┼─────────────┼─────────────┼─────────────┼─────────────┼─────────┤
+│    0    │ 'test name 1' │ 14623312.39818303  │  1   │  74070612  │ '5.065s'  │ '1.205e+1%' │ '6.827e-8s' │ '1.171e-1s' │ '1.361e-1s' │    0    │
+│    1    │ 'test name 2' │ 14585570.013743076 │  2   │  73744860  │ '5.056s'  │ '1.202e+1%' │ '6.845e-8s' │ '1.162e-1s' │ '1.289e-1s' │    0    │
+└─────────┴───────────────┴────────────────────┴──────┴────────────┴───────────┴─────────────┴─────────────┴─────────────┴─────────────┴─────────┘
+test name 1 1
+test name 2 2
 ```
 
 # Options
@@ -63,6 +77,7 @@ code-bench aims at being a stable benchmarking tool. But what does that mean?
 
 1. Repeatability: Benchmarks should result is almost identical results if you run the same benchmark multiple times. This is surprisingly difficult to achieve.
 2. Comparability: It should be possible to compare the results from one test case to another.
+3. Accuracy: The numbers you read should be close to what you would see if running outside of the benchmark. code-bench usually reports slightly lower than expected in order to improve the above two concepts.
 
 
 # Things to keep in mind when benchmarking
@@ -74,3 +89,4 @@ code-bench aims at being a stable benchmarking tool. But what does that mean?
 
 ## License
 MIT
+**

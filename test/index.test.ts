@@ -4,6 +4,7 @@ describe('CodeBench', () => {
 	test('maxItrCount', async () => {
 		const cb = new CodeBench({
 			silent: true,
+			dynamicIterationCount: false,
 			maxItrCount: 1,
 		})
 		let itrCount = 0
@@ -16,6 +17,7 @@ describe('CodeBench', () => {
 	test('maxItrCount', async () => {
 		const cb = new CodeBench({
 			silent: true,
+			dynamicIterationCount: false,
 			maxItrCount: 10,
 		})
 		let itrCount = 0
@@ -30,6 +32,7 @@ describe('CodeBench', () => {
 		let executionCount = 0
 		const cb = new CodeBench({
 			silent: true,
+			dynamicIterationCount: false,
 			maxItrCount: 1,
 			startup: async () => {
 				executionCount = executionCount + 1
@@ -55,6 +58,7 @@ describe('CodeBench', () => {
 		let executionCount = 0
 		const cb = new CodeBench({
 			silent: true,
+			dynamicIterationCount: false,
 			maxItrCount: 1,
 			cleanup: async () => {
 				executionCount = executionCount + 1
@@ -74,6 +78,7 @@ describe('CodeBench', () => {
 		let executionCount = 0
 		const cb = new CodeBench({
 			silent: true,
+			dynamicIterationCount: false,
 			maxItrCount: 1,
 			cleanup: async () => {
 				executionCount = executionCount + 1
@@ -99,6 +104,7 @@ describe('CodeBench', () => {
 		let executionCount = 0
 		const cb = new CodeBench({
 			silent: true,
+			dynamicIterationCount: false,
 			maxItrCount: 1,
 			shutdown: async () => {
 				executionCount = executionCount + 1

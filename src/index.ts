@@ -1,35 +1,5 @@
-type BenchmarkResult = {
-	task: Task
-	taskName: string
-	totalCalls: number
-	opsPerSecondRaw: number
-	opsPerSecond?: string
-	stdDevRaw: number
-	stdDev?: string
-	totalTimeRaw: number
-	totalTime?: string
-	meanTimeRaw: number
-	meanTime?: string
-	minTimeRaw: number
-	minTime?: string
-	maxTimeRaw: number
-	maxTime?: string
-	dropped: number
-	rank: number
-}
-class TimeStamp {
-	start = 0
-	stop = 0
-	total = 0
-	dropped = false
-	operations = 0
-}
-class Task {
-	timings: TimeStamp[] = []
-	constructor(public name: string, public fn: () => void) {
-
-	}
-}
+import { BenchmarkResult } from "./BenchmarkResult"
+import { Task } from "./Task";
 
 // From MDN docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncFunction
 const AsyncFunction = Object.getPrototypeOf(async function () {/* Intentionally left blank */}).constructor;

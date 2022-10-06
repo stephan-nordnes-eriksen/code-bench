@@ -26,7 +26,7 @@ class Task {
 }
 
 // From MDN docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncFunction
-const AsyncFunction = Object.getPrototypeOf(async function () {/* Intentionally left blank */ }).constructor;
+const AsyncFunction = Object.getPrototypeOf(async function () {/* Intentionally left blank */}).constructor;
 
 /** Constructor Class for AsyncBenchmark */
 interface BenchmarkConfig {

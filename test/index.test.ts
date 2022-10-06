@@ -14,7 +14,7 @@ describe('CodeBench', () => {
 		await cb.run()
 		expect(itrCount).toBe(2) // 1 x warmup
 	})
-	test('maxItrCount', async () => {
+	test('maxItrCount many', async () => {
 		const cb = new CodeBench({
 			silent: true,
 			dynamicIterationCount: false,

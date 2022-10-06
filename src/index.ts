@@ -7,6 +7,7 @@ const AsyncFunction = Object.getPrototypeOf(async function () {/* Intentionally 
 /** Constructor Class for AsyncBenchmark */
 interface BenchmarkConfig {
 	silent?: boolean
+	allowRuntimeOptimizations?: boolean
 	maxItrCount?: number
 	maxItrTimeSeconds?: number
 	targetLoopTimeSeconds?: number
@@ -22,6 +23,7 @@ interface BenchmarkConfig {
 export class CodeBench {
 	tasks: Task[] = []
 	silent = false
+	allowRuntimeOptimizations = false
 	maxItrTimeNS = 5e9
 	maxItrCount = 2000000
 	cleanup?: () => void
@@ -32,6 +34,7 @@ export class CodeBench {
 
 	constructor({
 		silent = false,
+		allowRuntimeOptimizations = false,
 		maxItrCount = 2000000,
 		maxItrTimeSeconds = 5,
 		targetLoopTimeSeconds = 0.5,
@@ -41,6 +44,7 @@ export class CodeBench {
 		shutdown,
 	}: BenchmarkConfig = {}) {
 		this.silent = silent
+		this.allowRuntimeOptimizations = allowRuntimeOptimizations
 		this.maxItrCount = maxItrCount
 		this.maxItrTimeNS = maxItrTimeSeconds * 1e9
 		this.cleanup = cleanup
@@ -160,13 +164,13 @@ export class CodeBench {
 
 		// Old with-statement will apparently disable some optimizations, but is deprecated
 		// with({});
+		if(!this.allowRuntimeOptimizations){
+			// Eval empty string will apparently disable a lot of optimizations.
+			eval('')
 
-		// Eval empty string will apparently disable a lot of optimizations.
-		eval('')
-
-		// Empty try-catch will apparently disable optimizations
-		try {/* Intentionally left blank */ } catch (e) {/* Intentionally left blank */ }
-
+			// Empty try-catch will apparently disable optimizations
+			try {/* Intentionally left blank */ } catch (e) {/* Intentionally left blank */ }
+		}
 		if (this.startup) {
 			await Promise.resolve(this.startup()).catch(error => {
 				console.error("Error with startup function")
@@ -194,31 +198,47 @@ export class CodeBench {
 			let itrCount = 0
 			// TODO: Consider running the methods in a randomized order will likely make the
 			// tests even more robust to variances in runtime
+			let loopStartTime = process.hrtime()
+			let loopStopTime = process.hrtime()
 			while (!failure && (this.dynamicIterationCount || itrCount < this.maxItrCount) && (this.getNS() - startTime) < this.maxItrTimeNS) {
 				try {
-					const functionUniqueness = this.getNS()
-					const fnstr = this.generateRunnerMethodString(functionUniqueness, internalLoop)
-
-					// Creating a new async function from a string to prevent a number of js optimizations,
-					// causing unreliable/unstable tests
-					const newFn = new AsyncFunction(fnstr)
-
-					// Release stuff from event loop which could impact performance
-					await Promise.resolve()
-
-					// Pre assign variables to prevent memory allocation latencies
-
-					const timings = await newFn.call(task.fn)
-					timings.forEach((timeObje: { start: [number, number], stop: [number, number] }) => {
+					if(this.allowRuntimeOptimizations){
+						loopStartTime = process.hrtime()
+						for(let i = 0; i < internalLoop; i++ ) {
+							await task.fn()
+						}
+						loopStopTime = process.hrtime()
 						task.timings.push({
-							start: this.nsFromHrtime(timeObje.start),
-							stop: this.nsFromHrtime(timeObje.stop),
+							start: this.nsFromHrtime(loopStartTime),
+							stop: this.nsFromHrtime(loopStopTime),
 							dropped: false,
 							operations: internalLoop,
 							total: 0
 						})
-					})
+					} else {
+						const functionUniqueness = this.getNS()
+						const fnstr = this.generateRunnerMethodString(functionUniqueness, internalLoop)
 
+						// Creating a new async function from a string to prevent a number of js optimizations,
+						// causing unreliable/unstable tests
+						const newFn = new AsyncFunction(fnstr)
+
+						// Release stuff from event loop which could impact performance
+						await Promise.resolve()
+
+						// Pre assign variables to prevent memory allocation latencies
+
+						const timings = await newFn.call(task.fn)
+						timings.forEach((timeObje: { start: [number, number], stop: [number, number] }) => {
+							task.timings.push({
+								start: this.nsFromHrtime(timeObje.start),
+								stop: this.nsFromHrtime(timeObje.stop),
+								dropped: false,
+								operations: internalLoop,
+								total: 0
+							})
+						})
+					}
 					itrCount += internalLoop
 				} catch (error) {
 					failure = true
@@ -226,7 +246,7 @@ export class CodeBench {
 				}
 
 			}
-			if (global.gc) {
+			if (this.allowRuntimeOptimizations && global.gc) {
 				global.gc()
 			}
 			const taskResult = this.calculatePerf(task, failure)

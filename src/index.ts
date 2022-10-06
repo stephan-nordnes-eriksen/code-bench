@@ -1,13 +1,19 @@
 type BenchmarkResult = {
 	task: Task
 	taskName: string
-	opsPerSecond: number | string
-	stdDev: number | string
-	totalCalls: number | string
-	totalTime: number | string
-	meanTime: number | string
-	minTime: number | string
-	maxTime: number | string
+	totalCalls: number
+	opsPerSecondRaw: number
+	opsPerSecond?: string
+	stdDevRaw: number
+	stdDev?: string
+	totalTimeRaw: number
+	totalTime?: string
+	meanTimeRaw: number
+	meanTime?: string
+	minTimeRaw: number
+	minTime?: string
+	maxTimeRaw: number
+	maxTime?: string
 	dropped: number
 	rank: number
 }
@@ -85,13 +91,13 @@ export class CodeBench {
 			return {
 				task: task,
 				taskName: "*failed* " + task.name,
-				opsPerSecond: 0,
+				opsPerSecondRaw: 0,
 				totalCalls: 0,
-				totalTime: 0,
-				stdDev: 0,
-				meanTime: 0,
-				minTime: 0,
-				maxTime: 0,
+				totalTimeRaw: 0,
+				stdDevRaw: 0,
+				meanTimeRaw: 0,
+				minTimeRaw: 0,
+				maxTimeRaw: 0,
 				rank: 0,
 				dropped: 0,
 			}
@@ -100,13 +106,13 @@ export class CodeBench {
 			return {
 				task: task,
 				taskName: task.name,
-				opsPerSecond: 0,
+				opsPerSecondRaw: 0,
 				totalCalls: 0,
-				totalTime: 0,
-				stdDev: 0,
-				meanTime: 0,
-				minTime: 0,
-				maxTime: 0,
+				totalTimeRaw: 0,
+				stdDevRaw: 0,
+				meanTimeRaw: 0,
+				minTimeRaw: 0,
+				maxTimeRaw: 0,
 				rank: 0,
 				dropped: 0,
 			}
@@ -150,12 +156,18 @@ export class CodeBench {
 		return {
 			task: task,
 			taskName: task.name,
-			opsPerSecond: (sumOperations / completeTotalTime),
+			opsPerSecondRaw: (sumOperations / completeTotalTime),
+			opsPerSecond: (sumOperations / completeTotalTime).toFixed(3),
 			totalCalls: sumOperations,
+			totalTimeRaw: completeTotalTime,
 			totalTime: completeTotalTime.toFixed(3) + "s",
+			stdDevRaw: stdDev,
 			stdDev: stdDev.toExponential(3) + "%",
+			meanTimeRaw: mean,
 			meanTime: mean.toExponential(3) + "s",
+			minTimeRaw: min,
 			minTime: min.toExponential(3) + "s",
+			maxTimeRaw: max,
 			maxTime: max.toExponential(3) + "s",
 			rank: 0,
 			dropped: droppedSum,
@@ -258,10 +270,10 @@ export class CodeBench {
 		}
 		const resultsCopy = [...results]
 		resultsCopy.sort((a, b) => {
-			if (a.opsPerSecond < b.opsPerSecond) {
+			if (a.opsPerSecondRaw < b.opsPerSecondRaw) {
 				return 1
 			}
-			if (a.opsPerSecond > b.opsPerSecond) {
+			if (a.opsPerSecondRaw > b.opsPerSecondRaw) {
 				return -1
 			}
 			return 0
@@ -270,7 +282,18 @@ export class CodeBench {
 			res.rank = index + 1
 		})
 		if (!this.silent) {
-			console.table(results, ["taskName", "opsPerSecond", "rank", "totalCalls", "totalTime", "stdDev", "meanTime", "minTime", "maxTime", "dropped"])
+			console.table(results, [
+				"taskName",
+				"opsPerSecond",
+				"rank",
+				"totalCalls",
+				"totalTime",
+				"stdDev",
+				"meanTime",
+				"minTime",
+				"maxTime",
+				"dropped",
+			])
 		}
 		if (this.shutdown) {
 			await Promise.resolve(this.shutdown()).catch(error => {

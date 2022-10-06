@@ -9,7 +9,7 @@ code-bench aims at being a [stable](#key-concepts) JavaScript profiling tool, pr
 # Usage
 
 ```javascript
-import { CodeBench } from "../src/index"
+import { CodeBench } from "code-bench"
 
 const options = {
 	// see Options below for available settings

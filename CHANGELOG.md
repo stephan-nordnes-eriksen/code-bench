@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.7 (2022-10-06)
+
+
+### Bug Fixes
+
+* add documentation of allowRuntimeOptimizations option ([6810a07](https://github.com/stephan-nordnes-eriksen/code-bench/commit/6810a07d8966cf8b6110d220dfbbb1dcdde97f4e))
+
 ### 0.0.6 (2022-10-06)
 
 

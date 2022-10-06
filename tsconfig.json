@@ -5,11 +5,12 @@
 		"useUnknownInCatchVariables": false,
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
-		"target": "ES2019",
+		"target": "ES6",
 		"noImplicitAny": true,
+		"declaration": true,
 		"moduleResolution": "node",
 		"lib": [
-			"ES2019"
+			"ES6"
 		],
 		"sourceMap": true,
 		"outDir": "dist",

@@ -143,6 +143,51 @@ describe('CodeBench', () => {
 		expect(results[0].rank).toBe(1)
 		expect(results[1].rank).toBe(2)
 		expect(results[0]?.opsPerSecondRaw).toBeGreaterThan(results[1]?.opsPerSecondRaw)
-
 	})
+	test('allowRuntimeOptimizations', async () => {
+		const cb = new CodeBench({
+			silent: false,
+			dynamicIterationCount: true,
+			allowRuntimeOptimizations: true,
+		})
+		cb.task("fastest", () => {
+			const a = 2*2
+		})
+		cb.task("slowest", () => {
+			for (let index = 0; index < 200; index++) {
+				const a = 2*2
+			}
+		})
+		const results = await cb.run()
+
+
+		expect(results[0].rank).toBe(1)
+		expect(results[1].rank).toBe(2)
+		expect(results[0]?.opsPerSecondRaw).toBeGreaterThan(results[1]?.opsPerSecondRaw)
+
+		const cb2 = new CodeBench({
+			silent: false,
+			dynamicIterationCount: true,
+			allowRuntimeOptimizations: false,
+		})
+		cb2.task("fastest", () => {
+			const a = 2*2
+		})
+		cb2.task("slowest", () => {
+			for (let index = 0; index < 200; index++) {
+				const a = 2*2
+			}
+		})
+		const results2 = await cb2.run()
+
+
+		expect(results2[0].rank).toBe(1)
+		expect(results2[1].rank).toBe(2)
+		expect(results2[0]?.opsPerSecondRaw).toBeGreaterThan(results2[1]?.opsPerSecondRaw)
+
+		// Comparing methods
+		expect(results[0]?.opsPerSecondRaw).toBeGreaterThan(results2[0]?.opsPerSecondRaw)
+		expect(results[1]?.opsPerSecondRaw).toBeGreaterThan(results2[1]?.opsPerSecondRaw)
+	})
+
 })

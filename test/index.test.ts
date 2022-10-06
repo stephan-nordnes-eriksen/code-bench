@@ -125,4 +125,24 @@ describe('CodeBench', () => {
 		expect(testFailed).toBe(false)
 		expect(executionCount).toBe(1)
 	})
+	test('sanity tests', async () => {
+		const cb = new CodeBench({
+			silent: true,
+			dynamicIterationCount: true,
+		})
+		cb.task("fastest", () => {
+			const a = 2*2
+		})
+		cb.task("slowest", () => {
+			for (let index = 0; index < 200; index++) {
+				const a = 2*2
+			}
+		})
+		const results = await cb.run()
+
+		expect(results[0].rank).toBe(1)
+		expect(results[1].rank).toBe(2)
+		expect(results[0]?.opsPerSecondRaw).toBeGreaterThan(results[1]?.opsPerSecondRaw)
+
+	})
 })

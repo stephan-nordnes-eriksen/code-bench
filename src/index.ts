@@ -178,16 +178,16 @@ export class CodeBench {
 		for (let taskIndex = 0; taskIndex < this.tasks.length; taskIndex++) {
 			const task = this.tasks[taskIndex];
 			let failure = false
-			if (this.dynamicIterationCount) {
-				internalLoop = await this.getEstimateInnerLoopSize(task);
-			} else {
-				// single warmup
-				try {
+			try {
+				if (this.dynamicIterationCount) {
+					internalLoop = await this.getEstimateInnerLoopSize(task);
+				} else {
+					// single warmup
 					task.fn()
-				} catch (error) {
-					console.error(error)
-					failure = true
 				}
+			} catch (error) {
+				console.error(error)
+				failure = true
 			}
 
 			const startTime = this.getNS()

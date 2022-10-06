@@ -1,6 +1,6 @@
 {
 	"name": "code-bench",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "Stable benchmarking tool for determining code performance",
 	"license": "MIT",
 	"repository": "stephan-nordnes-eriksen/code-bench",
@@ -24,7 +24,7 @@
 		"patch-release": "standard-version && git push --follow-tags && npm publish"
 	},
 	"main": "dist/index.js",
-	"types" : "dist/index.d.ts",
+	"types": "dist/index.d.ts",
 	"files": [
 		"dist/"
 	],

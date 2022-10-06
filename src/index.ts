@@ -177,19 +177,22 @@ export class CodeBench {
 		const results: BenchmarkResult[] = []
 		for (let taskIndex = 0; taskIndex < this.tasks.length; taskIndex++) {
 			const task = this.tasks[taskIndex];
-			// TODO: Make a ramp-up function to find estimate runtime to dynamically determine internalLoop size.
-
+			let failure = false
 			if (this.dynamicIterationCount) {
 				internalLoop = await this.getEstimateInnerLoopSize(task);
 			} else {
 				// single warmup
-				task.fn()
+				try {
+					task.fn()
+				} catch (error) {
+					console.error(error)
+					failure = true
+				}
 			}
 
 			const startTime = this.getNS()
 			let itrCount = 0
-			let failure = false
-			// TODO: Running the methods in a randomised order will likely make the
+			// TODO: Consider running the methods in a randomized order will likely make the
 			// tests even more robust to variances in runtime
 			while (!failure && (this.dynamicIterationCount || itrCount < this.maxItrCount) && (this.getNS() - startTime) < this.maxItrTimeNS) {
 				try {

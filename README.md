@@ -4,11 +4,13 @@ code-bench aims at being a [stable](#key-concepts) JavaScript profiling tool, pr
 
 # Install
 
-`npm install code-bench`
+```sh
+npm install code-bench --save-dev
+```
 
 # Usage
 
-```javascript
+```typescript
 import { CodeBench } from "code-bench"
 
 const options = {

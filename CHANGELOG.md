@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.6 (2022-10-06)
+
+
+### Bug Fixes
+
+* handle errors in warmpu and rampup ([9198182](https://github.com/stephan-nordnes-eriksen/code-bench/commit/9198182983ad55cb8f4752b848a1ee18ac911fb5))
+
 ### 0.0.5 (2022-10-06)
 
 

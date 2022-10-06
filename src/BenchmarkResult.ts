@@ -18,4 +18,4 @@ export type BenchmarkResult = {
 	maxTime?: string;
 	dropped: number;
 	rank: number;
-};
+}

@@ -55,7 +55,10 @@ test name 2 2
 ```javascript
 const options = {
 	silent?: boolean
-		// default = false. Prints results to console
+		// default = false. Prevents prints results to console if true.
+	allowRuntimeOptimizations?: boolean
+		// default: false. Will run test without most optimization prevention techniques.
+		// Result; More real numbers, more variability. (less stable results)
 	maxItrCount?: number
 		// default: 2 000 000. Target total number of calls to task function.
 	maxItrTimeSeconds?: number

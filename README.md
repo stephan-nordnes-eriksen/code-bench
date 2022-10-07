@@ -1,4 +1,4 @@
-**# code-bench
+# code-bench
 
 code-bench aims at being a [stable](#key-concepts) JavaScript profiling tool, providing reliable benchmarking numbers.
 
@@ -94,4 +94,3 @@ code-bench aims at being a stable benchmarking tool. But what does that mean?
 
 ## License
 MIT
-**

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.8 (2022-10-07)
+
+
+### Bug Fixes
+
+* typo in readme ([243ce91](https://github.com/stephan-nordnes-eriksen/code-bench/commit/243ce9185ab09a0ccbea63b7178a291114af43e4))
+
 ### 0.0.7 (2022-10-06)
 
 

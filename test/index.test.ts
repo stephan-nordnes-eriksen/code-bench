@@ -129,6 +129,7 @@ describe('CodeBench', () => {
 		const cb = new CodeBench({
 			silent: true,
 			dynamicIterationCount: true,
+			maxItrTimeSeconds: 2
 		})
 		cb.task("fastest", () => {
 			const a = 2*2
@@ -149,6 +150,7 @@ describe('CodeBench', () => {
 			silent: false,
 			dynamicIterationCount: true,
 			allowRuntimeOptimizations: true,
+			maxItrTimeSeconds: 1,
 		})
 		cb.task("fastest", () => {
 			const a = 2*2
@@ -169,6 +171,7 @@ describe('CodeBench', () => {
 			silent: false,
 			dynamicIterationCount: true,
 			allowRuntimeOptimizations: false,
+			maxItrTimeSeconds: 1,
 		})
 		cb2.task("fastest", () => {
 			const a = 2*2
@@ -189,5 +192,53 @@ describe('CodeBench', () => {
 		expect(results[0]?.opsPerSecondRaw).toBeGreaterThan(results2[0]?.opsPerSecondRaw)
 		expect(results[1]?.opsPerSecondRaw).toBeGreaterThan(results2[1]?.opsPerSecondRaw)
 	})
+	test('silent', async () => {
+		const consoleLogMock = jest.fn()
+		console.log = consoleLogMock
+		const cb = new CodeBench({
+			silent: false,
+			maxItrCount: 1,
+			dynamicIterationCount: false,
+		})
+		cb.task("test task", () => {
+			const a = 2*2
+		})
+		cb.run()
+		expect(consoleLogMock.mock.calls).toEqual([])
+	})
+	test('disableCPUAnalysis', async () => {
+		const consoleLogMock = jest.fn()
+		console.log = consoleLogMock
+		const cb = new CodeBench({
+			silent: false,
+			dynamicIterationCount: false,
+			allowRuntimeOptimizations: true,
+			disableCPUAnalysis: false,
+			maxItrCount: 1,
+		})
+		cb.task("test", () => {
+			const a = 0
+		})
+		await cb.run()
 
+		expect(consoleLogMock)
+			.toHaveBeenNthCalledWith(1, "CPU load is", expect.any(String), "at %:", expect.any(String))
+
+		const consoleLogMockTwo = jest.fn()
+		console.log = consoleLogMockTwo
+		const cb2 = new CodeBench({
+			silent: false,
+			dynamicIterationCount: false,
+			allowRuntimeOptimizations: true,
+			disableCPUAnalysis: true,
+			maxItrCount: 1,
+		})
+		cb2.task("test", () => {
+			const a = 0
+		})
+		await cb2.run()
+
+		expect(consoleLogMockTwo)
+			.not.toHaveBeenNthCalledWith(1, "CPU load is", expect.any(String), "at %:", expect.any(String))
+	})
 })

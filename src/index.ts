@@ -1,4 +1,5 @@
 import { BenchmarkResult } from './BenchmarkResult'
+import { CPUAnalysis } from './CPUAnalysis';
 import { Task } from "./Task"
 
 // From MDN docs: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/AsyncFunction
@@ -8,6 +9,7 @@ const AsyncFunction = Object.getPrototypeOf(async function () {/* Intentionally 
 interface BenchmarkConfig {
 	silent?: boolean
 	allowRuntimeOptimizations?: boolean
+	disableCPUAnalysis?: boolean
 	maxItrCount?: number
 	maxItrTimeSeconds?: number
 	targetLoopTimeSeconds?: number
@@ -24,6 +26,7 @@ export class CodeBench {
 	tasks: Task[] = []
 	silent = false
 	allowRuntimeOptimizations = false
+	disableCPUAnalysis = false
 	maxItrTimeNS = 5e9
 	maxItrCount = 2000000
 	cleanup?: () => void
@@ -35,6 +38,7 @@ export class CodeBench {
 	constructor({
 		silent = false,
 		allowRuntimeOptimizations = false,
+		disableCPUAnalysis = false,
 		maxItrCount = 2000000,
 		maxItrTimeSeconds = 5,
 		targetLoopTimeSeconds = 0.5,
@@ -45,6 +49,7 @@ export class CodeBench {
 	}: BenchmarkConfig = {}) {
 		this.silent = silent
 		this.allowRuntimeOptimizations = allowRuntimeOptimizations
+		this.disableCPUAnalysis = disableCPUAnalysis
 		this.maxItrCount = maxItrCount
 		this.maxItrTimeNS = maxItrTimeSeconds * 1e9
 		this.cleanup = cleanup
@@ -158,6 +163,12 @@ export class CodeBench {
 		))
 	}
 	async run(): Promise<BenchmarkResult[]> {
+		if (this.tasks.length <= 0) {
+			if(!this.silent){
+				console.log("No tasks detected. Please add tasks with .task(name, function)")
+			}
+			return []
+		}
 		// Disable optimizations, for more stable runs
 		// Line below can apparently be used to disable optimizations in node, with --allow-natives-syntax
 		// % NeverOptimizeFunction(run);
@@ -171,6 +182,11 @@ export class CodeBench {
 			// Empty try-catch will apparently disable optimizations
 			try {/* Intentionally left blank */ } catch (e) {/* Intentionally left blank */ }
 		}
+
+		if(!this.disableCPUAnalysis && !this.silent) {
+			await CPUAnalysis.printCpuInformation()
+		}
+
 		if (this.startup) {
 			await Promise.resolve(this.startup()).catch(error => {
 				console.error("Error with startup function")

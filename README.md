@@ -1,4 +1,7 @@
 # code-bench
+> Still in pre-release
+
+Benchmarking suite for async and sync js code providing stable results.
 
 code-bench aims at being a [stable](#key-concepts) JavaScript profiling tool, providing reliable benchmarking numbers.
 
@@ -59,6 +62,8 @@ const options = {
 	allowRuntimeOptimizations?: boolean
 		// default: false. Will run test without most optimization prevention techniques.
 		// Result; More real numbers, more variability. (less stable results)
+	disableCPUAnalysis?: boolean
+		// default: false. If true, will disable printing information on current CPU load (nodejs only).
 	maxItrCount?: number
 		// default: 2 000 000. Target total number of calls to task function.
 	maxItrTimeSeconds?: number

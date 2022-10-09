@@ -4,8 +4,8 @@ import { CPUAnalysis } from "../src/CPUAnalysis"
 describe('CPUAnalysis', () => {
 	test('getLoadFromTime', async () => {
 		const loadTime = await CPUAnalysis.getLoadFromTime()
-		expect(loadTime).toBeGreaterThan(0)
-		expect(loadTime).toBeLessThan(1)
+		expect(loadTime).toBeGreaterThanOrEqual(0)
+		expect(loadTime).toBeLessThanOrEqual(1)
 	})
 	test('low cpu load full stack', async () => {
 		const consoleLogMock = jest.fn()

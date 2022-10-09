@@ -1,5 +1,5 @@
 # code-bench
-> Still in pre-release
+> Still in pre-release. Currently only works for node.js
 
 Benchmarking suite for async and sync js code providing stable results.
 

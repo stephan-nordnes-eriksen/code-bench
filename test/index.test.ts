@@ -7,12 +7,10 @@ describe('CodeBench', () => {
 			dynamicIterationCount: false,
 			maxItrCount: 1,
 		})
-		let itrCount = 0
-		cb.task("test a", () => {
-			itrCount += 1
-		})
+		const testA = jest.fn()
+		cb.task("test a", testA)
 		await cb.run()
-		expect(itrCount).toBe(2) // 1 x warmup
+		expect(testA).toBeCalledTimes(2) // 1 x warmup
 	})
 	test('maxItrCount many', async () => {
 		const cb = new CodeBench({
@@ -20,110 +18,102 @@ describe('CodeBench', () => {
 			dynamicIterationCount: false,
 			maxItrCount: 10,
 		})
-		let itrCount = 0
-		cb.task("test a", () => {
-			itrCount += 1
-		})
+		const testA = jest.fn()
+		cb.task("test a", testA)
 		await cb.run()
-		expect(itrCount).toBe(11) // 1 x warmup
+		expect(testA).toBeCalledTimes(11) // 1 x warmup
 	})
 
-	test('shutdown', async () => {
-		let executionCount = 0
+	test('startup', async () => {
+		const startupFunction = jest.fn()
 		const cb = new CodeBench({
 			silent: true,
 			dynamicIterationCount: false,
 			maxItrCount: 1,
-			startup: async () => {
-				executionCount = executionCount + 1
-			}
+			startup: startupFunction
 		})
-		let testFailed = false
+		const testA = jest.fn()
+		const testB = jest.fn()
 		cb.task("test a", () => {
-			if(executionCount !== 1){
-				testFailed = true
-			}
+			testA()
+			expect(testB).not.toBeCalled()
+			expect(startupFunction).toBeCalledTimes(1)
 		})
-		cb.task("test a", () => {
-			if(executionCount !== 1){
-				testFailed = true
-			}
+		cb.task("test b", () => {
+			testB()
+			expect(startupFunction).toBeCalledTimes(1)
 		})
-		expect(executionCount).toBe(0)
+		expect(startupFunction).not.toBeCalled()
 		await cb.run()
-		expect(testFailed).toBe(false)
-		expect(executionCount).toBe(1)
+		expect(startupFunction).toBeCalledTimes(1)
 	})
 	test('cleanup', async () => {
-		let executionCount = 0
+		const cleanupFunction = jest.fn()
 		const cb = new CodeBench({
 			silent: true,
 			dynamicIterationCount: false,
 			maxItrCount: 1,
-			cleanup: async () => {
-				executionCount = executionCount + 1
-			}
+			cleanup: cleanupFunction
 		})
-		let testFailed = false
+		const taskA = jest.fn()
 		cb.task("test a", () => {
-			if(executionCount !== 0){
-				testFailed = true
-			}
+			taskA()
+			expect(cleanupFunction).not.toBeCalled()
 		})
+		expect(cleanupFunction).not.toBeCalled()
 		await cb.run()
-		expect(testFailed).toBe(false)
-		expect(executionCount).toBe(1)
+		expect(cleanupFunction).toBeCalledTimes(1)
+		expect(taskA).toBeCalled()
 	})
 	test('cleanup between', async () => {
-		let executionCount = 0
+		const cleanupFunction = jest.fn()
 		const cb = new CodeBench({
 			silent: true,
 			dynamicIterationCount: false,
 			maxItrCount: 1,
-			cleanup: async () => {
-				executionCount = executionCount + 1
-			}
+			cleanup: cleanupFunction
 		})
-		let testFailed = false
+		const taskA = jest.fn()
+		const taskB = jest.fn()
+
 		cb.task("test a", () => {
-			if(executionCount !== 0){
-				testFailed = true
-			}
+			taskA()
+			expect(cleanupFunction).not.toBeCalled()
 		})
-		cb.task("test a", () => {
-			if(executionCount !== 1){
-				testFailed = true
-			}
+		cb.task("test b", () => {
+			taskB()
+			expect(cleanupFunction).toBeCalledTimes(1)
 		})
+		expect(cleanupFunction).not.toBeCalled()
 		await cb.run()
-		expect(testFailed).toBe(false)
-		expect(executionCount).toBe(2)
+		expect(cleanupFunction).toBeCalledTimes(2)
+		expect(taskA).toBeCalled()
+		expect(taskB).toBeCalled()
 	})
 
 	test('shutdown', async () => {
-		let executionCount = 0
+		const shutdownFunction = jest.fn()
 		const cb = new CodeBench({
 			silent: true,
 			dynamicIterationCount: false,
 			maxItrCount: 1,
-			shutdown: async () => {
-				executionCount = executionCount + 1
-			}
+			shutdown: shutdownFunction
 		})
-		let testFailed = false
+		const taskA = jest.fn()
+		const taskB = jest.fn()
 		cb.task("test a", () => {
-			if(executionCount !== 0){
-				testFailed = true
-			}
+			taskA()
+			expect(shutdownFunction).not.toBeCalled()
 		})
-		cb.task("test a", () => {
-			if(executionCount !== 0){
-				testFailed = true
-			}
+		cb.task("test b", () => {
+			taskB()
+			expect(shutdownFunction).not.toBeCalled()
 		})
+		expect(shutdownFunction).not.toBeCalled()
 		await cb.run()
-		expect(testFailed).toBe(false)
-		expect(executionCount).toBe(1)
+		expect(shutdownFunction).toBeCalledTimes(1)
+		expect(taskA).toBeCalled()
+		expect(taskB).toBeCalled()
 	})
 	test('sanity tests', async () => {
 		const cb = new CodeBench({
@@ -150,7 +140,8 @@ describe('CodeBench', () => {
 			silent: false,
 			dynamicIterationCount: true,
 			allowRuntimeOptimizations: true,
-			maxItrTimeSeconds: 1,
+			targetLoopTimeSeconds: 0.1,
+			maxItrTimeSeconds: 0.5,
 		})
 		cb.task("fastest", () => {
 			const a = 2*2
@@ -171,7 +162,8 @@ describe('CodeBench', () => {
 			silent: false,
 			dynamicIterationCount: true,
 			allowRuntimeOptimizations: false,
-			maxItrTimeSeconds: 1,
+			targetLoopTimeSeconds: 0.1,
+			maxItrTimeSeconds: 0.5,
 		})
 		cb2.task("fastest", () => {
 			const a = 2*2

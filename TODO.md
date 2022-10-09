@@ -1,2 +1,3 @@
-- [ ] Deploy v0.0.1
+- [X] Deploy v0.0.1
+- [ ] Add CPU load time features
 - [ ]

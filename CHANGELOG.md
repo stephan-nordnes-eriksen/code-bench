@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.9 (2022-10-09)
+
+
+### Bug Fixes
+
+* failing test ([11e91e8](https://github.com/stephan-nordnes-eriksen/code-bench/commit/11e91e8187b825bbbed1721663da9d7ad0c97051))
+
 ### 0.0.8 (2022-10-07)
 
 

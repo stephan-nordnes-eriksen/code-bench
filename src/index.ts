@@ -14,6 +14,7 @@ interface BenchmarkConfig {
 	maxItrTimeSeconds?: number
 	targetLoopTimeSeconds?: number
 	dynamicIterationCount?: boolean
+	dropOutliers?: boolean
 	/** Run after fully run task */
 	cleanup?: () => void
 	/** Run before all tasks */
@@ -34,6 +35,7 @@ export class CodeBench {
 	shutdown?: () => void
 	targetLoopRuntime = 5e8 // 0.5 seconds in ns
 	dynamicIterationCount = false
+	dropOutliers = true
 
 	constructor({
 		silent = false,
@@ -43,6 +45,7 @@ export class CodeBench {
 		maxItrTimeSeconds = 5,
 		targetLoopTimeSeconds = 0.5,
 		dynamicIterationCount = true,
+		dropOutliers = true,
 		cleanup,
 		startup,
 		shutdown,
@@ -57,6 +60,7 @@ export class CodeBench {
 		this.shutdown = shutdown
 		this.targetLoopRuntime = targetLoopTimeSeconds * 1e9
 		this.dynamicIterationCount = dynamicIterationCount
+		this.dropOutliers = dropOutliers
 	}
 	private getNS() {
 		const nsNow = process.hrtime()
@@ -265,7 +269,7 @@ export class CodeBench {
 			if (this.allowRuntimeOptimizations && global.gc) {
 				global.gc()
 			}
-			const taskResult = this.calculatePerf(task, failure)
+			const taskResult = this.calculatePerf(task, failure, this.dropOutliers)
 			if (!this.silent) {
 				this.printResultPreview(taskResult)
 			}

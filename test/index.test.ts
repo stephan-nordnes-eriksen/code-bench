@@ -122,11 +122,11 @@ describe('CodeBench', () => {
 			maxItrTimeSeconds: 2
 		})
 		cb.task("fastest", () => {
-			const a = 2*2
+			const a = 2 * 2
 		})
 		cb.task("slowest", () => {
 			for (let index = 0; index < 200; index++) {
-				const a = 2*2
+				const a = 2 * 2
 			}
 		})
 		const results = await cb.run()
@@ -144,11 +144,11 @@ describe('CodeBench', () => {
 			maxItrTimeSeconds: 0.5,
 		})
 		cb.task("fastest", () => {
-			const a = 2*2
+			const a = 2 * 2
 		})
 		cb.task("slowest", () => {
 			for (let index = 0; index < 200; index++) {
-				const a = 2*2
+				const a = 2 * 2
 			}
 		})
 		const results = await cb.run()
@@ -166,11 +166,11 @@ describe('CodeBench', () => {
 			maxItrTimeSeconds: 0.5,
 		})
 		cb2.task("fastest", () => {
-			const a = 2*2
+			const a = 2 * 2
 		})
 		cb2.task("slowest", () => {
 			for (let index = 0; index < 200; index++) {
-				const a = 2*2
+				const a = 2 * 2
 			}
 		})
 		const results2 = await cb2.run()
@@ -193,7 +193,7 @@ describe('CodeBench', () => {
 			dynamicIterationCount: false,
 		})
 		cb.task("test task", () => {
-			const a = 2*2
+			const a = 2 * 2
 		})
 		cb.run()
 		expect(consoleLogMock.mock.calls).toEqual([])
@@ -232,5 +232,38 @@ describe('CodeBench', () => {
 
 		expect(consoleLogMockTwo)
 			.not.toHaveBeenNthCalledWith(1, "CPU load is", expect.any(String), "at %:", expect.any(String))
+	})
+
+	test.only('failing task', async () => {
+		const consoleTableMock = jest.fn()
+		console.table = consoleTableMock
+		const cb = new CodeBench({
+			silent: false,
+			dynamicIterationCount: false,
+			allowRuntimeOptimizations: true,
+			disableCPUAnalysis: false,
+			maxItrCount: 1,
+		})
+		cb.task("test", () => {
+			throw Error("Example error")
+		})
+
+		await cb.run() // not throw error
+
+		expect(consoleTableMock).toBeCalledWith([
+			expect.objectContaining({
+				"taskName": "*failed* test",
+			})], [
+				"taskName",
+				"opsPerSecond",
+				"rank",
+				"totalCalls",
+				"totalTime",
+				"stdDev",
+				"meanTime",
+				"minTime",
+				"maxTime",
+				"dropped",
+			])
 	})
 })

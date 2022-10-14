@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.10 (2022-10-14)
+
+
+### Bug Fixes
+
+* add test for failing task ([cd3627d](https://github.com/stephan-nordnes-eriksen/code-bench/commit/cd3627df24c0521f6a0c7cd98dbc73ada60dcb4c))
+
 ### 0.0.9 (2022-10-09)
 
 

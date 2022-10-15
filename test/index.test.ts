@@ -254,16 +254,16 @@ describe('CodeBench', () => {
 			expect.objectContaining({
 				"taskName": "*failed* test",
 			})], [
-				"taskName",
-				"opsPerSecond",
-				"rank",
-				"totalCalls",
-				"totalTime",
-				"stdDev",
-				"meanTime",
-				"minTime",
-				"maxTime",
-				"dropped",
-			])
+			"taskName",
+			"opsPerSecond",
+			"rank",
+			"totalCalls",
+			"totalTime",
+			"stdDev",
+			"meanTime",
+			"minTime",
+			"maxTime",
+			"dropped",
+		])
 	})
 })

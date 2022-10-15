@@ -268,48 +268,94 @@ describe('CodeBench', () => {
 			"dropped",
 		])
 	})
-	test.only("calculatePerf", () => {
-		const cb = new CodeBench({
-			silent: false,
-			dynamicIterationCount: false,
-			allowRuntimeOptimizations: true,
-			disableCPUAnalysis: false,
-			maxItrCount: 1,
+	describe("calculatePerf", () => {
+		let cb: CodeBench;
+		beforeAll(() => {
+			cb = new CodeBench({
+				silent: false,
+				dynamicIterationCount: false,
+				allowRuntimeOptimizations: true,
+				disableCPUAnalysis: false,
+				maxItrCount: 1,
+			})
 		})
-		const task = new Task("test task 1", () => {/* */})
-		const timeStamp = new TimeStamp()
-		timeStamp.start = 0
-		timeStamp.stop = 1e8
-		timeStamp.operations = 1
+		test("dropped", () => {
+			const task = new Task("test task 1", () => {/* */})
+			const timeStamp = new TimeStamp()
+			timeStamp.start = 0
+			timeStamp.stop = 1e8
+			timeStamp.operations = 1
 
-		const timeStampSlow = new TimeStamp()
-		timeStampSlow.start = 0
-		timeStampSlow.stop = 1e12
-		timeStampSlow.operations = 1
+			const timeStampSlow = new TimeStamp()
+			timeStampSlow.start = 0
+			timeStampSlow.stop = 1e12
+			timeStampSlow.operations = 1
 
-		task.timings = [
-			timeStamp,
-			timeStamp,
-			timeStamp,
-			timeStamp,
-			timeStamp,
-			timeStamp,
-			timeStamp,
-			timeStamp,
-			timeStamp,
-			timeStamp,
-			timeStamp, // 11 timeStamps
-			timeStampSlow
-		]
-		const result = cb["calculatePerf"](task, false, true)
-		expect(result.dropped).toBe(1)
-		expect(result.stdDevRaw).toBeCloseTo(0)
+			task.timings = [
+				timeStamp,
+				timeStamp,
+				timeStamp,
+				timeStamp,
+				timeStamp,
+				timeStamp,
+				timeStamp,
+				timeStamp,
+				timeStamp,
+				timeStamp,
+				timeStamp, // 11 timeStamps
+				timeStampSlow
+			]
+			const result = cb["calculatePerf"](task, false, true)
+			expect(result.dropped).toBe(1)
+			expect(result.stdDevRaw).toBeCloseTo(0)
 
-		timeStamp.dropped = false
-		timeStampSlow.dropped = false
-		const resultTwo = cb["calculatePerf"](task, false, false)
-		expect(resultTwo.dropped).toBe(0)
-		expect(resultTwo.stdDevRaw).toBeCloseTo(276.35776065636)
+			timeStamp.dropped = false
+			timeStampSlow.dropped = false
+			const resultTwo = cb["calculatePerf"](task, false, false)
+			expect(resultTwo.dropped).toBe(0)
+			expect(resultTwo.stdDevRaw).toBeCloseTo(276.35776065636)
+		})
+		test("failed", () => {
+			const task = new Task("test task 1", () => {/* */})
+			const timeStamp = new TimeStamp()
+			timeStamp.start = 0
+			timeStamp.stop = 1e8
+			timeStamp.operations = 1
 
+			task.timings = [
+				timeStamp,
+			]
+			const result = cb["calculatePerf"](task, true, true)
+			expect(result.taskName).toBe("*failed* test task 1")
+			expect(result.opsPerSecondRaw).toBe(0)
+			expect(result.totalCalls).toBe(0)
+			expect(result.totalTimeRaw).toBe(0)
+			expect(result.stdDevRaw).toBe(0)
+			expect(result.meanTimeRaw).toBe(0)
+			expect(result.minTimeRaw).toBe(0)
+			expect(result.maxTimeRaw).toBe(0)
+			expect(result.rank).toBe(0)
+			expect(result.dropped).toBe(0)
+		})
+		test("empty timings", () => {
+			const task = new Task("test task 1", () => {/* */})
+			const timeStamp = new TimeStamp()
+			timeStamp.start = 0
+			timeStamp.stop = 1e8
+			timeStamp.operations = 1
+
+			task.timings = []
+			const result = cb["calculatePerf"](task, false, true)
+			expect(result.taskName).toBe("*no timings* test task 1")
+			expect(result.opsPerSecondRaw).toBe(0)
+			expect(result.totalCalls).toBe(0)
+			expect(result.totalTimeRaw).toBe(0)
+			expect(result.stdDevRaw).toBe(0)
+			expect(result.meanTimeRaw).toBe(0)
+			expect(result.minTimeRaw).toBe(0)
+			expect(result.maxTimeRaw).toBe(0)
+			expect(result.rank).toBe(0)
+			expect(result.dropped).toBe(0)
+		})
 	})
 })

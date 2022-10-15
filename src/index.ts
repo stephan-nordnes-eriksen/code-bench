@@ -88,7 +88,7 @@ export class CodeBench {
 		if (task.timings.length < 1) {
 			return {
 				task: task,
-				taskName: task.name,
+				taskName: "*no timings* " + task.name,
 				opsPerSecondRaw: 0,
 				totalCalls: 0,
 				totalTimeRaw: 0,

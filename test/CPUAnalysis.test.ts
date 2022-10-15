@@ -21,7 +21,12 @@ describe('CPUAnalysis', () => {
 			maxItrCount: 1,
 		})
 		cb.task("test", () => {
-			const a = 0
+			let a = 0
+			if(a){
+				a = 1
+			} else {
+				a = 2
+			}
 		})
 		await cb.run()
 

@@ -124,11 +124,17 @@ describe('CodeBench', () => {
 			maxItrTimeSeconds: 2
 		})
 		cb.task("fastest", () => {
-			const a = 2 * 2
+			let a = 2 * 2
+			if (a) {
+				a = 2
+			}
 		})
 		cb.task("slowest", () => {
 			for (let index = 0; index < 200; index++) {
-				const a = 2 * 2
+				let a = 2 * 2
+				if (a) {
+					a = 2
+				}
 			}
 		})
 		const results = await cb.run()
@@ -146,11 +152,17 @@ describe('CodeBench', () => {
 			maxItrTimeSeconds: 0.5,
 		})
 		cb.task("fastest", () => {
-			const a = 2 * 2
+			let a = 2 * 2
+			if (a) {
+				a = 2
+			}
 		})
 		cb.task("slowest", () => {
 			for (let index = 0; index < 200; index++) {
-				const a = 2 * 2
+				let a = 2 * 2
+				if (a) {
+					a = 2
+				}
 			}
 		})
 		const results = await cb.run()
@@ -168,11 +180,17 @@ describe('CodeBench', () => {
 			maxItrTimeSeconds: 0.5,
 		})
 		cb2.task("fastest", () => {
-			const a = 2 * 2
+			let a = 2 * 2
+			if (a) {
+				a = 2
+			}
 		})
 		cb2.task("slowest", () => {
 			for (let index = 0; index < 200; index++) {
-				const a = 2 * 2
+				let a = 2 * 2
+				if (a) {
+					a = 2
+				}
 			}
 		})
 		const results2 = await cb2.run()
@@ -195,7 +213,10 @@ describe('CodeBench', () => {
 			dynamicIterationCount: false,
 		})
 		cb.task("test task", () => {
-			const a = 2 * 2
+			let a = 2 * 2
+			if (a) {
+				a = 2
+			}
 		})
 		cb.run()
 		expect(consoleLogMock.mock.calls).toEqual([])
@@ -211,7 +232,10 @@ describe('CodeBench', () => {
 			maxItrCount: 1,
 		})
 		cb.task("test", () => {
-			const a = 0
+			let a = 0
+			if (a) {
+				a = 2
+			}
 		})
 		await cb.run()
 
@@ -228,7 +252,10 @@ describe('CodeBench', () => {
 			maxItrCount: 1,
 		})
 		cb2.task("test", () => {
-			const a = 0
+			let a = 0
+			if (a) {
+				a = 2
+			}
 		})
 		await cb2.run()
 
@@ -280,7 +307,7 @@ describe('CodeBench', () => {
 			})
 		})
 		test("dropped", () => {
-			const task = new Task("test task 1", () => {/* */})
+			const task = new Task("test task 1", () => {/* */ })
 			const timeStamp = new TimeStamp()
 			timeStamp.start = 0
 			timeStamp.stop = 1e8
@@ -316,7 +343,7 @@ describe('CodeBench', () => {
 			expect(resultTwo.stdDevRaw).toBeCloseTo(276.35776065636)
 		})
 		test("failed", () => {
-			const task = new Task("test task 1", () => {/* */})
+			const task = new Task("test task 1", () => {/* */ })
 			const timeStamp = new TimeStamp()
 			timeStamp.start = 0
 			timeStamp.stop = 1e8
@@ -338,7 +365,7 @@ describe('CodeBench', () => {
 			expect(result.dropped).toBe(0)
 		})
 		test("empty timings", () => {
-			const task = new Task("test task 1", () => {/* */})
+			const task = new Task("test task 1", () => {/* */ })
 			const timeStamp = new TimeStamp()
 			timeStamp.start = 0
 			timeStamp.stop = 1e8

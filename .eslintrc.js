@@ -13,5 +13,7 @@ module.exports = {
 		'@typescript-eslint/no-explicit-any': 'error',
 		'indent': ['error', 'tab'],
 		'jest/no-disabled-tests': 'error',
+		'jest/no-test-prefixes': 'error',
+		'jest/no-focused-tests': 'error'
 	},
 }

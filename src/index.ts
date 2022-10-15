@@ -121,7 +121,14 @@ export class CodeBench {
 			sumOperations += time.operations
 		})
 		const mean = sum / sumOperations
-		const stdDev = Math.sqrt(task.timings.reduce((total, timing) => total + Math.pow((timing.total || 0) - mean, 2), 0) / task.timings.length) * 100
+		const stdDevSquared = task.timings.reduce(
+			(total, timing) => {
+				if (timing.dropped) {
+					return total
+				}
+				return total + Math.pow((timing.total || 0) - mean, 2)
+			}, 0) / (task.timings.length - droppedSum)
+		const stdDev = Math.sqrt(stdDevSquared)
 		if (filter_outliers) {
 			const limit = stdDev * 3 // My statisticsfoo is poor... maybe 3 sigma?
 			let someDropped = false
@@ -145,7 +152,7 @@ export class CodeBench {
 			totalTimeRaw: completeTotalTime,
 			totalTime: completeTotalTime.toFixed(3) + "s",
 			stdDevRaw: stdDev,
-			stdDev: stdDev.toExponential(3) + "%",
+			stdDev: stdDev.toExponential(3),
 			meanTimeRaw: mean,
 			meanTime: mean.toExponential(3) + "s",
 			minTimeRaw: min,
@@ -168,7 +175,7 @@ export class CodeBench {
 	}
 	async run(): Promise<BenchmarkResult[]> {
 		if (this.tasks.length <= 0) {
-			if(!this.silent){
+			if (!this.silent) {
 				console.log("No tasks detected. Please add tasks with .task(name, function)")
 			}
 			return []
@@ -179,7 +186,7 @@ export class CodeBench {
 
 		// Old with-statement will apparently disable some optimizations, but is deprecated
 		// with({});
-		if(!this.allowRuntimeOptimizations){
+		if (!this.allowRuntimeOptimizations) {
 			// Eval empty string will apparently disable a lot of optimizations.
 			eval('')
 
@@ -187,7 +194,7 @@ export class CodeBench {
 			try {/* Intentionally left blank */ } catch (e) {/* Intentionally left blank */ }
 		}
 
-		if(!this.disableCPUAnalysis && !this.silent) {
+		if (!this.disableCPUAnalysis && !this.silent) {
 			await CPUAnalysis.printCpuInformation()
 		}
 
@@ -222,9 +229,9 @@ export class CodeBench {
 			let loopStopTime = process.hrtime()
 			while (!failure && (this.dynamicIterationCount || itrCount < this.maxItrCount) && (this.getNS() - startTime) < this.maxItrTimeNS) {
 				try {
-					if(this.allowRuntimeOptimizations){
+					if (this.allowRuntimeOptimizations) {
 						loopStartTime = process.hrtime()
-						for(let i = 0; i < internalLoop; i++ ) {
+						for (let i = 0; i < internalLoop; i++) {
 							await task.fn()
 						}
 						loopStopTime = process.hrtime()

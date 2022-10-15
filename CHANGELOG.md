@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.12 (2022-10-15)
+
+
+### Bug Fixes
+
+* up to node 14+ due to eslint-plugin-jest ([c011422](https://github.com/stephan-nordnes-eriksen/code-bench/commit/c0114224ebd39eb1d4eb695c7f550d5121a96e56))
+
 ### 0.0.11 (2022-10-15)
 
 

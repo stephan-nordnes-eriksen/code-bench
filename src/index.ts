@@ -159,7 +159,7 @@ export class CodeBench {
 	private printResultPreview(result: BenchmarkResult) {
 		console.log(result.task.name, result.opsPerSecond, "ops/sec ±", result.stdDev, "min/max/mean:", [result.minTime, result.maxTime, result.meanTime].join("/"), "(", result.totalCalls, "runs sampled )")
 	}
-	task(name: string, fn: () => void) {
+	task(name: string, fn: () => void): void {
 		// store scope here? Maybe the scope is preserved?
 		this.tasks.push(new Task(
 			name,

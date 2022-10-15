@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.11 (2022-10-15)
+
+
+### Bug Fixes
+
+* return type in function ([9911de4](https://github.com/stephan-nordnes-eriksen/code-bench/commit/9911de445bb9a9a389a9441147fae8e2e7daa563))
+
 ### 0.0.10 (2022-10-14)
 
 

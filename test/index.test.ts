@@ -1,4 +1,6 @@
 import { CodeBench } from "../src/index";
+import { Task } from "../src/Task";
+import { TimeStamp } from "../src/TimeStamp";
 
 describe('CodeBench', () => {
 	test('maxItrCount', async () => {
@@ -234,7 +236,7 @@ describe('CodeBench', () => {
 			.not.toHaveBeenNthCalledWith(1, "CPU load is", expect.any(String), "at %:", expect.any(String))
 	})
 
-	test.only('failing task', async () => {
+	test('failing task', async () => {
 		const consoleTableMock = jest.fn()
 		console.table = consoleTableMock
 		const cb = new CodeBench({
@@ -265,5 +267,49 @@ describe('CodeBench', () => {
 			"maxTime",
 			"dropped",
 		])
+	})
+	test.only("calculatePerf", () => {
+		const cb = new CodeBench({
+			silent: false,
+			dynamicIterationCount: false,
+			allowRuntimeOptimizations: true,
+			disableCPUAnalysis: false,
+			maxItrCount: 1,
+		})
+		const task = new Task("test task 1", () => {/* */})
+		const timeStamp = new TimeStamp()
+		timeStamp.start = 0
+		timeStamp.stop = 1e8
+		timeStamp.operations = 1
+
+		const timeStampSlow = new TimeStamp()
+		timeStampSlow.start = 0
+		timeStampSlow.stop = 1e12
+		timeStampSlow.operations = 1
+
+		task.timings = [
+			timeStamp,
+			timeStamp,
+			timeStamp,
+			timeStamp,
+			timeStamp,
+			timeStamp,
+			timeStamp,
+			timeStamp,
+			timeStamp,
+			timeStamp,
+			timeStamp, // 11 timeStamps
+			timeStampSlow
+		]
+		const result = cb["calculatePerf"](task, false, true)
+		expect(result.dropped).toBe(1)
+		expect(result.stdDevRaw).toBeCloseTo(0)
+
+		timeStamp.dropped = false
+		timeStampSlow.dropped = false
+		const resultTwo = cb["calculatePerf"](task, false, false)
+		expect(resultTwo.dropped).toBe(0)
+		expect(resultTwo.stdDevRaw).toBeCloseTo(276.35776065636)
+
 	})
 })

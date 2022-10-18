@@ -69,6 +69,15 @@ export class CodeBench {
 	private nsFromHrtime(hrtimeObject: [number, number]) {
 		return hrtimeObject[0] * 1e9 + hrtimeObject[1]
 	}
+	private sortBenchmarkResults(a: BenchmarkResult, b: BenchmarkResult): number {
+		if (a.opsPerSecondRaw < b.opsPerSecondRaw) {
+			return 1
+		}
+		if (a.opsPerSecondRaw > b.opsPerSecondRaw) {
+			return -1
+		}
+		return 0
+	}
 	private calculatePerf(task: Task, failure: boolean, filter_outliers = true): BenchmarkResult {
 		if (failure) {
 			return {
@@ -289,15 +298,7 @@ export class CodeBench {
 			}
 		}
 		const resultsCopy = [...results]
-		resultsCopy.sort((a, b) => {
-			if (a.opsPerSecondRaw < b.opsPerSecondRaw) {
-				return 1
-			}
-			if (a.opsPerSecondRaw > b.opsPerSecondRaw) {
-				return -1
-			}
-			return 0
-		})
+		resultsCopy.sort(this.sortBenchmarkResults)
 		resultsCopy.forEach((res, index) => {
 			res.rank = index + 1
 		})

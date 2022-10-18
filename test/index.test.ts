@@ -1,7 +1,7 @@
 import { CodeBench } from "../src/index";
 import { Task } from "../src/Task";
 import { TimeStamp } from "../src/TimeStamp";
-
+import { BenchmarkResult } from "../src/BenchmarkResult";
 describe('CodeBench', () => {
 	test('maxItrCount', async () => {
 		const cb = new CodeBench({
@@ -49,6 +49,31 @@ describe('CodeBench', () => {
 		await cb.run()
 		expect(startupFunction).toBeCalledTimes(1)
 	})
+
+	test('startup failing', async () => {
+		// Most startups do
+		const consoleMock = jest.fn()
+		console.error = consoleMock
+		const startupFunction = jest.fn()
+		const errorMock = jest.fn()
+		startupFunction.mockRejectedValue(errorMock)
+		const cb = new CodeBench({
+			silent: true,
+			dynamicIterationCount: false,
+			maxItrCount: 1,
+			startup: startupFunction
+		})
+		const taskA = jest.fn()
+		cb.task("test a", taskA)
+		expect(startupFunction).not.toBeCalled()
+		await cb.run()
+		expect(startupFunction).toBeCalledTimes(1)
+		expect(taskA).toBeCalled()
+		expect(consoleMock).toHaveBeenCalledTimes(2)
+		expect(consoleMock).toHaveBeenNthCalledWith(1, "Error with startup function")
+		expect(consoleMock).toHaveBeenNthCalledWith(2, errorMock)
+	})
+
 	test('cleanup', async () => {
 		const cleanupFunction = jest.fn()
 		const cb = new CodeBench({
@@ -67,6 +92,32 @@ describe('CodeBench', () => {
 		expect(cleanupFunction).toBeCalledTimes(1)
 		expect(taskA).toBeCalled()
 	})
+	test('cleanup failing', async () => {
+		const consoleMock = jest.fn()
+		console.error = consoleMock
+		const cleanupFunction = jest.fn()
+		const errorMock = jest.fn()
+		cleanupFunction.mockRejectedValue(errorMock)
+		const cb = new CodeBench({
+			silent: true,
+			dynamicIterationCount: false,
+			maxItrCount: 1,
+			cleanup: cleanupFunction
+		})
+		const taskA = jest.fn()
+		cb.task("test a", () => {
+			taskA()
+			expect(cleanupFunction).not.toBeCalled()
+		})
+		expect(cleanupFunction).not.toBeCalled()
+		await cb.run()
+		expect(cleanupFunction).toBeCalledTimes(1)
+		expect(taskA).toBeCalled()
+		expect(consoleMock).toHaveBeenCalledTimes(2)
+		expect(consoleMock).toHaveBeenNthCalledWith(1, "Error with cleanup function")
+		expect(consoleMock).toHaveBeenNthCalledWith(2, errorMock)
+	})
+
 	test('cleanup between', async () => {
 		const cleanupFunction = jest.fn()
 		const cb = new CodeBench({
@@ -117,6 +168,31 @@ describe('CodeBench', () => {
 		expect(taskA).toBeCalled()
 		expect(taskB).toBeCalled()
 	})
+
+	test('shutdown failing', async () => {
+		const consoleMock = jest.fn()
+		console.error = consoleMock
+		const shutdownFunction = jest.fn()
+		const errorMock = jest.fn()
+		shutdownFunction.mockRejectedValue(errorMock)
+		const cb = new CodeBench({
+			silent: true,
+			dynamicIterationCount: false,
+			maxItrCount: 1,
+			shutdown: shutdownFunction
+		})
+		const taskA = jest.fn()
+		cb.task("test a", taskA)
+		expect(shutdownFunction).not.toBeCalled()
+		await cb.run()
+		expect(shutdownFunction).toBeCalledTimes(1)
+		expect(taskA).toBeCalled()
+		expect(consoleMock).toHaveBeenCalledTimes(2)
+		expect(consoleMock).toHaveBeenNthCalledWith(1, "Error with shutdown function")
+		expect(consoleMock).toHaveBeenNthCalledWith(2, errorMock)
+	})
+
+
 	test('sanity tests', async () => {
 		const cb = new CodeBench({
 			silent: true,
@@ -295,6 +371,65 @@ describe('CodeBench', () => {
 			"dropped",
 		])
 	})
+	test('failing task after warmup', async () => {
+		const consoleTableMock = jest.fn()
+		const consoleErrorMock = jest.fn()
+		console.error = consoleErrorMock
+		console.table = consoleTableMock
+		const cb = new CodeBench({
+			silent: false,
+			dynamicIterationCount: false,
+			allowRuntimeOptimizations: true,
+			disableCPUAnalysis: false,
+			maxItrCount: 1,
+		})
+		let counter = 0
+		const tracker = jest.fn()
+		const errorMock = jest.fn()
+
+		cb.task("test", () => {
+			if(counter > 0){
+				tracker()
+				throw errorMock
+			}
+			counter += 1
+		})
+
+		await cb.run() // not throw error
+		expect(tracker).toBeCalled()
+		expect(consoleErrorMock).toBeCalledWith(errorMock)
+		expect(consoleTableMock).toBeCalledWith([
+			expect.objectContaining({
+				"taskName": "*failed* test",
+			})], [
+			"taskName",
+			"opsPerSecond",
+			"rank",
+			"totalCalls",
+			"totalTime",
+			"stdDev",
+			"meanTime",
+			"minTime",
+			"maxTime",
+			"dropped",
+		])
+	})
+	test('run without tasks', async () => {
+		const consoleTableMock = jest.fn()
+		const consoleLogMock = jest.fn()
+		console.log = consoleLogMock
+		console.table = consoleTableMock
+		const cb = new CodeBench({
+			silent: false,
+			dynamicIterationCount: false,
+			allowRuntimeOptimizations: true,
+			disableCPUAnalysis: false,
+			maxItrCount: 1,
+		})
+
+		await cb.run() // not throw error
+		expect(consoleLogMock).toBeCalledWith("No tasks detected. Please add tasks with .task(name, function)")
+	})
 	describe("calculatePerf", () => {
 		let cb: CodeBench;
 		beforeAll(() => {
@@ -384,5 +519,61 @@ describe('CodeBench', () => {
 			expect(result.rank).toBe(0)
 			expect(result.dropped).toBe(0)
 		})
+	})
+	test("with gc", async () => {
+		const cb = new CodeBench({
+			dynamicIterationCount: false,
+			allowRuntimeOptimizations: true,
+			disableCPUAnalysis: true,
+			maxItrCount: 1,
+		})
+		const gcMock = jest.fn()
+		global.gc = gcMock
+		const testA = jest.fn()
+		cb.task("test a", testA)
+		expect(gcMock).not.toHaveBeenCalled()
+		await cb.run()
+		expect(gcMock).toHaveBeenCalled()
+	})
+	test("sortBenchmarkResults", () => {
+		const cb = new CodeBench({
+			dynamicIterationCount: false,
+			allowRuntimeOptimizations: true,
+			disableCPUAnalysis: true,
+			maxItrCount: 1,
+		})
+		const taskFunction = jest.fn()
+		const task = new Task("name", taskFunction)
+		const resultHigh: BenchmarkResult = {
+			task: task,
+			taskName: "name",
+			totalCalls: 1,
+			opsPerSecondRaw: 1,
+			stdDevRaw: 1,
+			totalTimeRaw: 1,
+			meanTimeRaw: 1,
+			minTimeRaw: 1,
+			maxTimeRaw: 1,
+			dropped: 1,
+			rank: 1,
+		}
+		const resultLow: BenchmarkResult = {
+			task: task,
+			taskName: "name",
+			totalCalls: 0,
+			opsPerSecondRaw: 0,
+			stdDevRaw: 0,
+			totalTimeRaw: 0,
+			meanTimeRaw: 0,
+			minTimeRaw: 0,
+			maxTimeRaw: 0,
+			dropped: 0,
+			rank: 0,
+		}
+		expect(cb["sortBenchmarkResults"](resultHigh, resultLow)).toBe(-1)
+		expect(cb["sortBenchmarkResults"](resultLow, resultHigh)).toBe(1)
+		expect(cb["sortBenchmarkResults"](resultHigh, resultHigh)).toBe(0)
+		expect(cb["sortBenchmarkResults"](resultLow, resultLow)).toBe(0)
+
 	})
 })

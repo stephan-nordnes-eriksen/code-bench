@@ -135,14 +135,14 @@ export class CodeBench {
 				if (timing.dropped) {
 					return total
 				}
-				return total + Math.pow((timing.total || 0) - mean, 2)
+				return total + Math.pow(timing.total - mean, 2)
 			}, 0) / (task.timings.length - droppedSum)
 		const stdDev = Math.sqrt(stdDevSquared)
 		if (filter_outliers) {
 			const limit = stdDev * 3 // My statisticsfoo is poor... maybe 3 sigma?
 			let someDropped = false
 			task.timings.map(tm => {
-				tm.dropped = Math.abs((tm.total || 0) - mean) > limit
+				tm.dropped = Math.abs(tm.total - mean) > limit
 				someDropped = someDropped || tm.dropped
 			})
 			if (someDropped) {

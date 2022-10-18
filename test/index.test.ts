@@ -3,6 +3,12 @@ import { Task } from "../src/Task";
 import { TimeStamp } from "../src/TimeStamp";
 import { BenchmarkResult } from "../src/BenchmarkResult";
 describe('CodeBench', () => {
+	test('silly tests to get coverage', () => {
+		const cb = new CodeBench({})
+		expect(cb).not.toBe(undefined)
+		const cbTwo = new CodeBench()
+		expect(cbTwo).not.toBe(undefined)
+	})
 	test('maxItrCount', async () => {
 		const cb = new CodeBench({
 			silent: true,
@@ -470,6 +476,9 @@ describe('CodeBench', () => {
 			const result = cb["calculatePerf"](task, false, true)
 			expect(result.dropped).toBe(1)
 			expect(result.stdDevRaw).toBeCloseTo(0)
+			const resultDefault = cb["calculatePerf"](task, false)
+			expect(resultDefault.dropped).toBe(1)
+			expect(resultDefault.stdDevRaw).toBeCloseTo(0)
 
 			timeStamp.dropped = false
 			timeStampSlow.dropped = false

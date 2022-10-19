@@ -21,7 +21,11 @@ jobs:
           scope: 'stephan_ne'
       - run: npm install
       - run: npm run build
-      - run: npm test
+      - run: npm test-report
+        env:
+          COVERALLS_SERVICE_NAME: ${{ secrets.COVERALLS_SERVICE_NAME }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          COVERALLS_GIT_BRANCH: ${{ secrets.COVERALLS_GIT_BRANCH }}
       - name: setup git config
         run: |
           # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default

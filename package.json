@@ -1,6 +1,6 @@
 {
 	"name": "code-bench",
-	"version": "0.0.14",
+	"version": "1.0.0",
 	"description": "Stable benchmarking tool for determining code performance",
 	"license": "MIT",
 	"repository": "stephan-nordnes-eriksen/code-bench",

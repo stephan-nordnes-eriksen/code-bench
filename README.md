@@ -1,5 +1,9 @@
+[![npm version](https://badge.fury.io/js/code-bench.svg)](https://badge.fury.io/js/code-bench)
+[![GitHub issues](https://img.shields.io/github/issues/stephan-nordnes-eriksen/code-bench)](https://github.com/stephan-nordnes-eriksen/code-bench/issues)
+[![GitHub license](https://img.shields.io/github/license/stephan-nordnes-eriksen/code-bench)](https://github.com/stephan-nordnes-eriksen/code-bench/blob/main/LICENSE)
+[![Coverage Status](https://coveralls.io/repos/github/stephan-nordnes-eriksen/code-bench/badge.svg?branch=main)](https://coveralls.io/github/stephan-nordnes-eriksen/code-bench?branch=main)
 # code-bench
-> Still in pre-release. Currently only works for node.js
+> Currently only works for node.js
 
 Benchmarking suite for async and sync js code providing stable results.
 

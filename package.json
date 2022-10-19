@@ -19,6 +19,7 @@
 		"lint": "tsc --noEmit && eslint \"{src,test}/**/*.{js,ts}\"",
 		"lint-fix": "tsc --noEmit && eslint \"{src,test}/**/*.{js,ts}\" --fix",
 		"test": "jest --forceExit --coverage --verbose",
+		"test-report": "jest --coverage && coveralls < coverage/lcov.info",
 		"watch-test": "npm run test -- --watchAll",
 		"watch-ts": "tsc -w",
 		"patch-release": "standard-version && git push --follow-tags && npm publish"
@@ -34,11 +35,11 @@
 		"speed",
 		"profiling"
 	],
-	"dependencies": {},
 	"devDependencies": {
 		"@types/jest": "^29.1.2",
 		"@typescript-eslint/eslint-plugin": "^5.0.0",
 		"@typescript-eslint/parser": "^5.0.0",
+		"coveralls": "^3.1.1",
 		"eslint": "^8.25.0",
 		"eslint-plugin-jest": "^27.1.2",
 		"jest": "^29.2.0",

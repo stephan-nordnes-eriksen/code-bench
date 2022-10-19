@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.0.13 (2022-10-19)
+
+
+### Bug Fixes
+
+* last tests for 100% coverage ([7416abf](https://github.com/stephan-nordnes-eriksen/code-bench/commit/7416abf22d63dd63164fc97dbe8f5f7eb04dac97))
+
 ### 0.0.12 (2022-10-15)
 
 
